@@ -2,9 +2,8 @@ package bingo_wx
 
 import (
 	"encoding/json"
-	"github.com/aosfather/bingo/mvc"
 	"fmt"
-
+	mvc "github.com/aosfather/bingo_mvc"
 )
 
 type signerRequest struct {
@@ -36,9 +35,9 @@ func (this *JsSigner) GetConfig(uri string) (config *jsConfig, err error) {
 		return
 	}
 
-	nonceStr :=this.DefaultStr
-	if this.DefaultStr ==""{
-		nonceStr=RandomStr(16)
+	nonceStr := this.DefaultStr
+	if this.DefaultStr == "" {
+		nonceStr = RandomStr(16)
 	}
 	timestamp := GetCurrTs()
 	str := fmt.Sprintf("jsapi_ticket=%s&noncestr=%s&timestamp=%d&url=%s", ticketStr, nonceStr, timestamp, uri)
@@ -76,4 +75,3 @@ func (this *JsSigner) Get(c mvc.Context, p interface{}) (interface{}, mvc.BingoE
 	return "input parameter is wrong!", nil
 
 }
-

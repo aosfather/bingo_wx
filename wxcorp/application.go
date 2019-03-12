@@ -6,7 +6,7 @@ import (
 
 	"encoding/json"
 
-	"github.com/aosfather/bingo/mvc"
+	mvc "github.com/aosfather/bingo_mvc"
 )
 
 type WxAuthCorpApi interface {

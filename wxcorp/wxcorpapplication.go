@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/aosfather/bingo"
-	"github.com/aosfather/bingo/mvc"
-	"github.com/aosfather/bingo/utils"
+	mvc "github.com/aosfather/bingo_mvc"
+	utils "github.com/aosfather/bingo_utils"
 )
 
 const (
