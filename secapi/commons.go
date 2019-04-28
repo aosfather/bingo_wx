@@ -39,6 +39,8 @@ type Client struct {
 	AppId    string
 	Merchant string
 	Key      string
+	CerFile  string
+	KeyFile  string
 }
 
 //呼叫API
@@ -50,7 +52,7 @@ func (this *Client) CallApi(url string, request Request, response interface{}) e
 	request.SetSign(s)
 	req, _ := xml.Marshal(request)
 	fmt.Println(string(req))
-	body, err := PostHttps(url, req)
+	body, err := postHttps(url, req)
 	if err != nil {
 		fmt.Println(err.Error())
 		return err
@@ -95,9 +97,8 @@ func (this *Client) buildSign(parames ...string) string {
 	return strings.ToUpper(str)
 }
 
-func PostHttps(url string, data []byte) ([]byte, error) {
-
-	cer, err := tls.LoadX509KeyPair("apiclient_cert.pem", "apiclient_key.pem")
+func (this *Client) postHttps(url string, data []byte) ([]byte, error) {
+	cer, err := tls.LoadX509KeyPair(this.CerFile, this.KeyFile)
 	if err != nil {
 		log.Println(err)
 		return nil, err
