@@ -52,7 +52,7 @@ func (this *Client) CallApi(url string, request Request, response interface{}) e
 	request.SetSign(s)
 	req, _ := xml.Marshal(request)
 	fmt.Println(string(req))
-	body, err := postHttps(url, req)
+	body, err := this.postHttps(url, req)
 	if err != nil {
 		fmt.Println(err.Error())
 		return err
