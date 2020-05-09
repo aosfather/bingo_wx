@@ -42,4 +42,8 @@ api.SetFlatKey("PEDFA23343",fpub))
 apiv3.MerchantApplymentState(api,"xxxxxxxxxx")
 ```
 ### sdk提供了下载平台公钥的接口
-
+apiv3接口中提供了下载平台公钥的方法，前提是需要设置api v3的密钥，这个在微信商户后台设置的。  
+```go
+//指明下载保存的文件名，会将下载更新的平台秘钥写入该文件，包括秘钥编号
+api.DownloadFlatPublicKey("/opt/xx_cert.txt")
+```

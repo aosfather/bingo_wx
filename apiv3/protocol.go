@@ -14,6 +14,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 )
@@ -206,6 +207,19 @@ func (this *ApiV3) DownloadFlatPublicKey(filename string) error {
 	flatresponse := flatKeyResponse{}
 	json.Unmarshal(data, &flatresponse)
 	//保存文件
+	f, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	//循环遍历返回的秘钥，可能存在多个秘钥
+	for _, d := range flatresponse.Data {
+		f.WriteString(d.SerialNo)
+		f.WriteString("-------------------------------")
+		//解密文件
+		this.aes.DecryptToString(d.EncryptCertificate.AssociatedData, d.EncryptCertificate.Nonce, d.EncryptCertificate.Ciphertext)
+		f.WriteString("------------END-----------------")
+	}
 
 	return nil
 
