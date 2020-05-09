@@ -39,7 +39,7 @@ api.SetFlatKey("PEDFA23343",fpub))
 除此之外apiv3包还封装了和实名认证申请相关的接口。例如下面的“查询商户实名状态的”
 ```go
 //调用查询商户实名状态的接口
-MerchantApplymentState(api,"112323232")
+apiv3.MerchantApplymentState(api,"112323232")
 ```
 ### sdk提供了下载平台公钥的接口
 
