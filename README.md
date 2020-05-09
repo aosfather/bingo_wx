@@ -16,7 +16,7 @@ import (
 ### 构建api v3 sdk
 apiv3 需要服务商商户私钥加密信息和微信平台沟通
 ```go
-api:=ApiV3{}
+api:=apiv3.ApiV3{}
 api.MerchantId="服务商商户号"
 //读取私钥
 pk,err:=ioutil.ReadFile("e:/opt/私钥.pem")
