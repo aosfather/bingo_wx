@@ -5,8 +5,6 @@ import (
 	"strings"
 
 	"encoding/json"
-
-	mvc "github.com/aosfather/bingo_mvc"
 )
 
 type WxAuthCorpApi interface {
@@ -30,7 +28,6 @@ func (this *wxCorpAppContext) Init(id int, title string) {
 }
 
 type wxCorpApplicationHub struct {
-	mvc.SimpleController
 	suit     *WxCorpSuite
 	contexts map[string]*wxCorpAppContext
 	notifys  map[string]*WxApprovalApi //申请同步api
