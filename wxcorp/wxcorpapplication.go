@@ -3,13 +3,12 @@ package wxcorp
 import (
 	"encoding/xml"
 	"fmt"
+	"github.com/aosfather/bingo_utils/log"
 	"time"
 
 	"strings"
 
-	"github.com/aosfather/bingo"
 	mvc "github.com/aosfather/bingo_mvc"
-	utils "github.com/aosfather/bingo_utils"
 )
 
 const (
@@ -134,12 +133,19 @@ func (this *WxSuitInputMsg) GetDataType() string {
 	return "xml"
 }
 
+type WxCorpConfig struct {
+	CorpId      string
+	CorpSecret  string
+	Token       string
+	SuiteId     string
+	SuiteSecret string
+}
+
 /**
   访问获取token时候返回的消息
 
 */
 type WxCorpSuite struct {
-	mvc.SimpleController
 	encryted         CorpEncrypt
 	token            string //初始token
 	corpId           string //企业id
@@ -156,17 +162,19 @@ type WxCorpSuite struct {
 	hub              wxCorpApplicationHub
 	contexts         map[string]*wxAuthCorpcontext
 	//	contexts         map[string]*wxCorpAppContext
-	logger utils.Log
+	logger log.Log
 }
 
-func (this *WxCorpSuite) Init(prefix string, app *bingo.ApplicationContext, stage CorpDataStage) {
-	this.logger = app.GetLog("wxcorpsuite")
+func (this *WxCorpSuite) Init(config *WxCorpConfig, stage CorpDataStage) {
+	if this.logger == nil {
+		this.logger = log.DefaultLog()
+	}
 	this.dataStage = stage
-	this.corpId = app.GetPropertyFromConfig(prefix + ".wx.corpid")
-	this.corpSecret = app.GetPropertyFromConfig(prefix + ".wx.secret")
-	this.token = app.GetPropertyFromConfig(prefix + ".wx.token")
-	this.suiteId = app.GetPropertyFromConfig(prefix + ".wx.suite")
-	this.suiteSecret = app.GetPropertyFromConfig(prefix + ".wx.suitesecret")
+	this.corpId = config.CorpId
+	this.corpSecret = config.CorpSecret
+	this.token = config.Token
+	this.suiteId = config.SuiteId
+	this.suiteSecret = config.SuiteSecret
 	this.encryted = CorpEncrypt{}
 	this.encryted.Init(this.token, this.corpId, this.suiteId, this.corpSecret)
 	this.contexts = make(map[string]*wxAuthCorpcontext)
@@ -188,17 +196,7 @@ func (this *WxCorpSuite) SetHandle(app CorpApplicationHandle, contact CorpOrgCha
 	this.orgHandle = contact
 }
 
-func (this *WxCorpSuite) GetParameType(method string) interface{} {
-	fmt.Println(method)
-	if method == "GET" {
-		return &WxValidateRequest{}
-	} else {
-		return &WxSuitInputMsg{}
-	}
-
-}
-
-func (this *WxCorpSuite) Get(c mvc.Context, p interface{}) (interface{}, mvc.BingoError) {
+func (this *WxCorpSuite) HandleValidateMessage(p interface{}) (interface{}, mvc.BingoError) {
 	if q, ok := p.(*WxValidateRequest); ok {
 		this.logger.Info("wx validate %v", q)
 		ret, result := this.encryted.VerifyURL(q.Signature, q.Timestamp, q.Nonce, q.Echostr)
@@ -213,7 +211,7 @@ func (this *WxCorpSuite) Get(c mvc.Context, p interface{}) (interface{}, mvc.Bin
 }
 
 //正常的访问消息处理
-func (this *WxCorpSuite) Post(c mvc.Context, p interface{}) (interface{}, mvc.BingoError) {
+func (this *WxCorpSuite) HandleInputMessage(p interface{}) (interface{}, mvc.BingoError) {
 	if msg, ok := p.(*WxSuitInputMsg); ok {
 		this.logger.Debug("msg:%s", msg)
 		ret, result := this.encryted.DecryptInputMsg(msg.Signature, msg.Timestamp, msg.Nonce, msg.GetInput())
